@@ -2,6 +2,8 @@
 #include <string.h>
 #include<time.h>
 
+void registeration();
+
 //username length=20
 int run=1,loggedIn=0;
 char currentUser[20];
@@ -49,4 +51,47 @@ int main(void){
         }
     }
 
+}
+
+
+void registeration(){
+    char username[20],password[20],storedUsername[20];
+    int error=1;
+    
+    FILE *file=fopen("users.txt","a+");
+    
+    printf("\n-------------------\n");
+    printf("-Registration Page-");
+	printf("\n-------------------\n");
+
+    while(error==1){
+        
+        printf("\nEnter a username: ");
+        fgets(username,sizeof(username),stdin);
+        username[strcspn(username,"\n")]=0;
+
+        error=0;
+        rewind(file);
+        
+        while (fgets(storedUsername,sizeof(storedUsername),file) != NULL) {
+            storedUsername[strcspn(storedUsername,"\n")]=0;
+
+            if (strcmp(username,storedUsername)==0){
+                printf("Username already taken, Try another one");
+                error=1;
+                break;
+            }
+            fgets(storedUsername,sizeof(storedUsername),file);
+        }        
+    }
+
+    printf("Enter a password: ");
+    fgets(password,sizeof(password),stdin);
+    password[strcspn(password, "\n")] = 0;
+
+    fprintf(file,"%s\n%s\n",username,password);
+
+    fclose(file);
+    
+    printf("\n---User registered successfully!---\n\n\n");
 }
