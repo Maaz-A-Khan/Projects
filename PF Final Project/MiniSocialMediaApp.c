@@ -4,6 +4,7 @@
 
 void registeration();
 void login();
+void postMenu();
 
 //username length=20
 int run=1,loggedIn=0;
@@ -144,3 +145,45 @@ void login(){
     fclose(file);
     
 }
+
+void postMenu(){
+    int choice;
+
+    while(run==1){
+        printf("\n\n-------------------\n");
+        printf("-  Post Menu  -");
+        printf("\n-------------------\n\n");
+        printf("- To Create a post = 1\n");
+        printf("- To View posts    = 2\n");
+        printf("- To Delete posts  = 3\n\n");
+        printf("- To Logout        = 0");
+        scanf("%d",&choice);
+        getchar();
+
+        switch (choice){
+        case 1:
+            createPost();
+            break;
+
+        case 2:
+            viewPost();    
+            break;
+
+        case 3:
+            deletePost();
+            break;
+
+        case 0:
+            printf("\n\n-- Good Bye ! --\n\n");
+            run = 0;
+			loggedIn = 0;
+            printf("\n\n--You have successfuly logged out!--\n\n");
+            break;
+
+        default:
+            printf("Invalid choice selected");
+            break;
+        }
+    }
+}
+
