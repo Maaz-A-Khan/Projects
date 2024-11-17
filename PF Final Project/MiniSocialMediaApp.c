@@ -3,6 +3,7 @@
 #include<time.h>
 
 void registeration();
+void login();
 
 //username length=20
 int run=1,loggedIn=0;
@@ -94,4 +95,52 @@ void registeration(){
     fclose(file);
     
     printf("\n---User registered successfully!---\n\n\n");
+}
+
+
+void login(){
+    char username[20],password[20],storedUsername[20],storedPassword[20];
+    int found=0;
+    
+    FILE *file=fopen("users.txt","r");
+    
+    printf("\n-------------------\n");
+    printf("-   Login Page    -");
+	printf("\n-------------------\n");
+
+    while(found==0){
+        
+        printf("\nEnter your username: ");
+        fgets(username,sizeof(username),stdin);
+        username[strcspn(username,"\n")]=0;
+
+        printf("Enter your password: ");
+        fgets(password,sizeof(password),stdin);
+        password[strcspn(password,"\n")]=0;
+
+        rewind(file);
+
+        while (fgets(storedUsername,sizeof(storedUsername),file) != NULL) {
+            storedUsername[strcspn(storedUsername, "\n")] = 0;
+
+            fgets(storedPassword,sizeof(storedPassword),file);
+            storedPassword[strcspn(storedPassword, "\n")] = 0;
+
+            if(strcmp(username,storedUsername)==0 && strcmp(password,storedPassword)==0){
+                printf("\n\n---Login Successful---\n\n\n");
+                loggedIn=1;
+                found=1;
+                strcpy(currentUser,username);
+                break;
+            }
+            
+
+        }
+        if (found==0){
+            printf("Wrong password or username! ");
+        }
+
+    }
+    fclose(file);
+    
 }
