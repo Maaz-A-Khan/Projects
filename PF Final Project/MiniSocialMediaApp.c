@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include<time.h>
+#include <time.h>
+#include <stdlib.h>
 
 //username length=20
 
@@ -10,6 +11,7 @@ void postMenu(char *currentUser);
 void createPost(char *currentUser);
 void viewPost();
 void xorEncryptDecrypt(char *text);
+void deleteUserPosts(char *currentUser);
 
 typedef struct{
 	char user[20] , time[30], category[30], post[251];
@@ -164,9 +166,10 @@ void postMenu(char *currentUser){
         printf("\n\n-------------------\n");
         printf("-  Post Menu  -");
         printf("\n-------------------\n\n");
-        printf("- To Create a post = 1\n");
-        printf("- To View posts    = 2\n\n");
-        printf("- To Logout        = 0\n\n");
+        printf("- To Create a post         = 1\n");
+        printf("- To View posts            = 2\n");
+        printf("- To delete all your posts = 3\n\n");
+        printf("- To Logout                = 0\n\n");
         printf("Enter your Choice: ");
         scanf("%d",&choice);
         getchar();
@@ -179,6 +182,10 @@ void postMenu(char *currentUser){
         case 2:
             viewPost();    
             break;
+        
+        case 3:
+        	deleteUserPosts(currentUser);
+        	break;
 
         case 0:
             printf("\n\n-- Good Bye ! --\n\n");
@@ -381,12 +388,12 @@ void viewPost() {
 	    if (fgets(search.post, sizeof(search.post), file) == NULL) {
 	        break;
 	    }
-	    
+	    // removing \n
 	    search.user[strcspn(search.user, "\n")] = '\0';
 	    search.category[strcspn(search.category, "\n")] = '\0';
 	    search.time[strcspn(search.time, "\n")] = '\0';
 	    search.post[strcspn(search.post, "\n")] = '\0';
-        //strcspn(search.user, "\n")  gives the where \n is located so we can remove it
+        
 
         //Checking for matching posts and displaying them :)
         if ((choice == 2 && strcmp(search.user, username) == 0) ||
@@ -412,5 +419,61 @@ void xorEncryptDecrypt(char *text) {
     int textLength = strlen(text); //text length for the loop 
     for (int i = 0;i<textLength; i++) {
         text[i] = text[i] ^ key;
+    }
+}
+
+
+
+
+void deleteUserPosts(char *currentUser) {
+	post content;
+    int skip = 0;
+    
+    FILE *file = fopen("posts.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    
+    if (file == NULL || tempFile == NULL) {
+        printf("Error opening file!\n");
+        if (file != NULL) fclose(file);
+        if (tempFile != NULL) fclose(tempFile);
+        return;
+    }
+
+    
+
+    while (1) {
+        // reading file 4 lines at a time
+        if (fgets(content.user, sizeof(content.user), file) == NULL) 
+			break;
+        if (fgets(content.category, sizeof(content.category), file) == NULL) 
+			break;
+        if (fgets(content.time, sizeof(content.time), file) == NULL) 
+			break;
+        if (fgets(content.post, sizeof(content.post), file) == NULL) 
+			break;
+
+        // removing \n
+        content.user[strcspn(content.user, "\n")] = '\0';
+        content.category[strcspn(content.category, "\n")] = '\0';
+        content.time[strcspn(content.time, "\n")] = '\0';
+        content.post[strcspn(content.post, "\n")] = '\0';
+
+        // Skip posts of the logged in user
+        skip = strcmp(content.user, currentUser) == 0;
+
+        if (skip==0) {
+            // Write the remaining posts to the temporary file
+            fprintf(tempFile, "%s\n%s\n%s\n%s\n", content.user, content.category, content.time, content.post);
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    // Replace the original file with the temporary file
+    if (remove("posts.txt") != 0 || rename("temp.txt", "posts.txt") != 0) {
+        printf("Error updating posts file.\n");
+    } else {
+        printf("\n\\--- All posts of user '%s' deleted successfully :) ! ---/\n", currentUser);
     }
 }
