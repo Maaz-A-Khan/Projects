@@ -3,13 +3,11 @@
 #include<time.h>
 
 //username length=20
-int run=1,loggedIn=0;
-char currentUser[20];
 
 void registeration();
-void login();
-void postMenu();
-void createPost();
+int login(char *currentUser);
+void postMenu(char *currentUser);
+void createPost(char *currentUser);
 void viewPost();
 void xorEncryptDecrypt(char *text);
 
@@ -18,11 +16,14 @@ typedef struct{
 }post;
 
 int main(void){
-    int choice;
+    int choice,run=1,loggedIn=0;
+    char currentUser[20]="";
+
 
     while (run==1){
         if (loggedIn==1){
-            postMenu();
+            postMenu(currentUser);
+            loggedIn=0;
         }else{
             printf("------------------------\n");
             printf("---Welcome to Tweet---");
@@ -36,7 +37,7 @@ int main(void){
             
             switch (choice){
             case 1:
-                login();
+                loggedIn=login(currentUser);
                 break;
             
             case 2:
@@ -57,7 +58,7 @@ int main(void){
             }
         }
     }
-
+    return 0;
 }
 
 void registeration(){
@@ -107,14 +108,14 @@ void registeration(){
     printf("\n---User registered successfully!---\n\n\n");
 }
 
-void login(){
+int login(char *currentUser){
     char username[20],password[20],storedUsername[20],storedPassword[20];
     int found=0;
     
     FILE *file=fopen("users.txt","r");
     if (file == NULL) {
 		printf("\nError opening file!\n"); 
-		return;
+		return 0;
 	}
     
     printf("\n-------------------\n");
@@ -142,27 +143,24 @@ void login(){
 
             if(strcmp(username,storedUsername)==0 && strcmp(password,storedPassword)==0){
                 printf("\n\n---Login Successful---\n\n");
-                loggedIn=1;
                 found=1;
                 strcpy(currentUser,username);
-                break;
+                fclose(file);
+                return 1;
             }
-            
-
-        }
-        if (found==0){
-            printf("Wrong password or username! ");
         }
 
+        printf("Wrong password or username! ");
     }
+
     fclose(file);
-    
+    return 0;
 }
 
-void postMenu(){
+void postMenu(char *currentUser){
     int choice;
 
-    while(loggedIn==1){
+    while(1){
         printf("\n\n-------------------\n");
         printf("-  Post Menu  -");
         printf("\n-------------------\n\n");
@@ -175,7 +173,7 @@ void postMenu(){
 
         switch (choice){
         case 1:
-            createPost();
+            createPost(currentUser);
             break;
 
         case 2:
@@ -184,9 +182,8 @@ void postMenu(){
 
         case 0:
             printf("\n\n-- Good Bye ! --\n\n");
-			loggedIn = 0;
             printf("--You have successfuly logged out!--\n\n");
-            break;
+            return;
 
         default:
             printf("\n\n-------------------------\n");
@@ -197,12 +194,7 @@ void postMenu(){
     }
 }
 
-
-
-
-
-
-void createPost(){
+void createPost(char *currentUser){
 	FILE *file=fopen("posts.txt","a+");
 	post content;
 	if (file == NULL) {
@@ -302,7 +294,6 @@ void viewPost() {
     	printf("\n-------------------\n\n");
         printf("How do you want to search posts?\n\n");
         printf("1. By Category\n2. By Username\n\nEnter your choice: ");
-        getchar();
 		scanf("%d", &choice);
         printf("\n-----------------\n");
 
