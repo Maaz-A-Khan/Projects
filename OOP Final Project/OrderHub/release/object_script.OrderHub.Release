@@ -1,0 +1,13 @@
+release/adminpage.o
+release/main.o
+release/login.o
+release/orderinfo.o
+release/payment.o
+release/store.o
+release/userpage.o
+release/qrc_logo.o
+release/moc_adminpage.o
+release/moc_login.o
+release/moc_orderinfo.o
+release/moc_payment.o
+release/moc_userpage.o

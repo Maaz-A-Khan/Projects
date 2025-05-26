@@ -30,3 +30,66 @@ class OrderItem: public Product{
 			cout<<"Subtotal: "<<totalPrice()<<endl;
 		}
 };
+
+class PaymentMethod{
+	string paymentType;
+	float amountPaid;
+	public:
+		virtual string getPaymentType(){return paymentType;};
+		virtual float getAmountPaid(){return amountPaid;};
+		virtual void pay(float amount) = 0;
+};
+
+// Card,Cash,and EasyPaisa classes
+
+
+class Order{
+	static int nextId;
+	int orderId, userID;
+	string status;
+	vector<OrderItem> cart;
+	PaymentMethod* paymentMethod;
+
+	public:
+		Order(int uid){
+			orderId=nextId++;
+			userId=uid;
+			status="Pending";
+			PaymentMethod* paymentMethod = nullptr;
+		}
+
+		int getId() const{return orderId;}
+		int getUserId() const{return userId;}
+		string getStatus() const {return status;}
+		string getPaymentMethod() const{return paymentMethod->getPaymentType();}
+		void setStatus(string stat){status=stat;}
+		// setPayment method (to be after PaymentMethod class is implemented)
+
+		void addItem(OrderItem item){
+			cart.push_back(item);
+		}
+		float calculateTotalPrice() const{
+			float total=0;
+			for(const auto& item : cart){
+				total+=item.totalPrice();
+			}
+			return total;
+		}
+		void display() const {
+			cout<<"Order ID: "<<orderId<<endl;
+			cout<<"User ID: "<<userID<<endl;
+			cout<<"Status: "<<status<<endl;
+			cout<<"Payment Method: "<<paymentMethod->getPaymentType()<<endl;
+			cout<<"Items in Cart:" <<endl;
+
+			if (cart.empty()) {
+				cout << "  No items in the cart." << endl;
+			} else {
+				for (const auto& item : cart) {
+					item.display();
+					cout << "-----------------" << endl;
+				}
+			}
+			cout<<"Total Price: "<<calculateTotalPrice()<<endl;
+		}
+};
